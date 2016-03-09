@@ -19,5 +19,12 @@ from atm import views
 
 urlpatterns = [
     url(r'^$', views.card_number, name='homepage'),
+    url(r'^pin/$', views.pin_code, name='pin'),
+    url(r'^operations/$', views.operations, name='operations'),
+    url(r'^balance/$', views.balance, name='balance'),
+    url(r'^withdrawal/$', views.withdrawal, name='withdrawal'),
+    url(r'^report/$', views.report, name='report'),
+    url(r'^logout/$', views.logout, name='logout'),
+    url(r'^error/$', views.error, name='error'),
     url(r'^admin/', admin.site.urls),
 ]

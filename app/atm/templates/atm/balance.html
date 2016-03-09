@@ -1,0 +1,25 @@
+{% extends 'base.html'%} {% block content %}
+<div class="uk-container uk-container-center uk-margin-top uk-margin-large-bottom">
+  <h1>Account Balance</h1>
+  <div class="uk-grid">
+    <div class="uk-width-1-1">
+      <p>
+        Today: 12 dec 1996
+      </p>
+      <p>
+        Card number: 1111-1111-1111-1111
+      </p>
+      <p>
+        Account ballance: $34235
+      </p>
+    </div>
+    <hr class="uk-width-1-1 uk-margin">
+    <div class="uk-width-1-2">
+      <a href="{% url 'operations' %}" class="uk-button">Back</a>
+    </div>
+    <div class="uk-width-1-2">
+      <a href="{% url 'logout' %}" class="uk-button">Exit</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

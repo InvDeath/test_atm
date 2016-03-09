@@ -1,0 +1,31 @@
+{% extends 'base.html'%} {% block content %}
+
+<div class="uk-vertical-align uk-text-center uk-height-1-1">
+  <div class="uk-vertical-align-middle">
+    <h3>Login to Test ATM</h3>
+    <form class="uk-panel uk-form">
+      <div class="uk-form-row">
+        <input class="uk-width-1-1 uk-form-large" type="text" placeholder="Input your card number" maxlength="19" disabled="">
+      </div>
+      <div class="uk-grid uk-width-large-1-3 uk-push-1-3">
+
+        {% for i in "x"|rjust:"9" %}
+        <div class="uk-width-1-3 uk-grid-margin">
+          <button class="uk-button uk-button-large" type="button" name="button">{{forloop.counter}}</button>
+        </div>
+        {%endfor%}
+
+        <div class="uk-width-1-3 uk-grid-margin">
+          <button class="uk-button uk-button-large" type="button" name="button">Erase</button>
+        </div>
+        <div class="uk-width-1-3 uk-grid-margin">
+          <button class="uk-button uk-button-large" type="button" name="button">0</button>
+        </div>
+        <div class="uk-width-1-3 uk-grid-margin">
+          <input type="submit" value="Enter" class="uk-button uk-button-primary uk-button-large">
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

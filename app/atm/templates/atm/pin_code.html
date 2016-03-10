@@ -5,7 +5,7 @@
     <form class="uk-panel uk-form" method="post">
       {% csrf_token %}
       <div class="uk-form-row">
-        <input id="pin-input" class="uk-width-1-1 uk-form-large" type="password" placeholder="4 numbers" maxlength="4" disabled="">
+        <input id="pin-input" class="uk-width-1-1 uk-form-large" name="pin_code" type="password" placeholder="4 numbers" maxlength="4" readonly="readonly">
       </div>
       <div class="uk-grid uk-width-large-1-3 uk-push-1-3">
         {% keyboard 'pin-input' with_exit=True %}

@@ -1,7 +1,7 @@
 import re
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Card
+from .models import Card, Operation
 
 
 def error_message(request, message):
@@ -33,11 +33,25 @@ def card_number(request):
 
 
 def pin_code(request):
-    if not request.session.get('card_number'):
+    card_number = request.session.get('card_number')
+
+    if not card_number:
         return error_message(request, 'You don’t have access to this page')
 
     if request.method != 'POST':
         return render(request, 'atm/pin_code.html')
+
+    card = Card.objects.get(number=card_number, active=True)
+    raw_pin = request.POST.get('pin_code', '')
+    pattern = re.compile('^(\d{4})$')
+
+    if not pattern.match(raw_pin) or not card.pin == raw_pin:
+        Operation.objects.create(operation_type=Operation.WRONG_PIN, card=card)
+        if Operation.objects.filter(operation_type=Operation.WRONG_PIN, card=card).count() >= 4:
+            card.active = False
+            card.save()
+            return error_message(request, 'Your card has been blocked')
+        return error_message(request, 'Wrong pin code')
 
     return redirect('atm.views.operations')
 

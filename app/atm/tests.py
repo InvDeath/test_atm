@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
-from .models import Card
+from .models import Card, Operation
+
 
 class CardNumberTestCase(TestCase):
     fixtures = ['initial_data.json']
@@ -75,19 +76,37 @@ class PinTestCase(TestCase):
         self.assertTemplateUsed(response, 'atm/error.html')
         self.assertContains(response, 'access')
 
-
-
     def test_wrong_pin_message(self):
         self.input_correct_card_number()
-        response = self.client.post(reverse('pin_code'), follow=True)
+        response = self.client.post(
+            reverse('pin_code'), {'pin_code': '1234'}, follow=True)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'atm/error.html')
-        self.assertContains(response, 'wrong pin')
-
+        self.assertContains(response, 'Wrong pin code')
 
     def test_block_card(self):
-        assert False
+        self.input_correct_card_number()
+        for i in range(1, 4):  # constant in settings
+            response = self.client.post(
+                reverse('pin_code'), {'pin_code': '1234'}, follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'atm/error.html')
+            self.assertContains(response, 'Wrong pin code')
+            attempts = Operation.objects.filter(
+                card__number=self.client.session.get('card_number'),
+                operation_type=Operation.WRONG_PIN,
+            ).count()
+            self.assertEqual(attempts, i)
+        response = self.client.post(
+            reverse('pin_code'), {'pin_code': '1234'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'been blocked')
+
+        card = Card.objects.get(number=self.client.session.get('card_number'))
+
+        self.assertFalse(card.active)
 
     def test_valid_pin(self):
         assert False

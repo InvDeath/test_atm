@@ -53,6 +53,7 @@ def pin_code(request):
             return error_message(request, 'Your card has been blocked')
         return error_message(request, 'Wrong pin code')
 
+    request.session['card_holder'] = True
     return redirect('atm.views.operations')
 
 

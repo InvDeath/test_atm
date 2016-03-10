@@ -109,7 +109,12 @@ class PinTestCase(TestCase):
         self.assertFalse(card.active)
 
     def test_valid_pin(self):
-        assert False
+        self.input_correct_card_number()
+        response = self.client.post(
+            reverse('pin_code'), {'pin_code': '0000'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/operations.html')
+        self.assertTrue(self.client.session.get('card_holder'))
 
 
 class OperationsTestCase(TestCase):

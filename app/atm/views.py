@@ -1,10 +1,12 @@
 import re
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from .models import Card
 
 
-def error(request, message):
-    return render(request, 'atm/error.html', {'message': message})
+def error_message(request, message):
+    messages.error(request, message)
+    return redirect('atm.views.error')
 
 
 def card_number(request):
@@ -15,15 +17,17 @@ def card_number(request):
     pattern = re.compile('^(\d{4}-\d{4}-\d{4}-\d{4})$')
 
     if not pattern.match(raw_number):
-        return error(request,
-                     message='The card number must consist of 16 digits')
+        return error_message(request, 'The card number must consist of 16 digits')
 
     card = (Card.objects.filter(number=raw_number) or [None])[0]
 
     if not card:
-        return error(request, message='Card with this number not found')
+        return error_message(request, 'Card with this number not found')
 
-    return redirect('atm.views.pin_code', card_number=raw_number)
+    if not card.active:
+        return error_message(request, 'This card is blocked')
+
+    return redirect('atm.pin_code')
 
 
 def pin_code(request):
@@ -50,6 +54,10 @@ def withdrawal(request):
 
 def report(request):
     return render(request, 'atm/report.html')
+
+
+def error(request):
+    return render(request, 'atm/error.html')
 
 
 def logout(request):

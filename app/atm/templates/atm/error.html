@@ -3,9 +3,16 @@
   <h1>Error occurred</h1>
   <div class="uk-grid">
     <div class="uk-width-1-1">
-      <p>
-        {{ message }}
-      </p>
+
+      {% if messages %}
+      <div class="uk-block">
+          {% for message in messages %}
+          <div class="uk-alert uk-alert-danger">{{ message }}</div>
+          {% endfor %}
+      </div>
+      {% else %}
+        Something went wrong.
+      {% endif %}
     </div>
     <hr class="uk-width-1-1 uk-margin">
     <div class="uk-width-1-2">

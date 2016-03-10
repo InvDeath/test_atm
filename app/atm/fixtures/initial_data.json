@@ -5,7 +5,7 @@
     "fields": {
         "number": "1234-1234-1234-1234",
         "pin": "1234",
-        "active": true,
+        "active": false,
         "balance": "1000.00"
     }
 },

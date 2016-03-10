@@ -34,7 +34,14 @@ class CardNumberTestCase(TestCase):
         self.assertContains(response, 'not found')
 
     def test_blocked_card_message(self):
-        assert False
+        response = self.client.post(
+            reverse('card_number'),
+            {'number': '1234-1234-1234-1234'},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'blocked')
 
     def test_valid_card_and_number(self):
         assert False

@@ -1,10 +1,16 @@
-from django.test import TestCase
+from django.test import TestCase, Client
+from django.core.urlresolvers import reverse
 
 
 class CardNumberTestCase(TestCase):
 
+    def setUp(self):
+        self.client = Client()
+
     def test_user_can_input_number(self):
-        assert False
+        response = self.client.get(reverse('homepage'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/card_number.html')
 
     def test_process_valid_data(self):
         assert False

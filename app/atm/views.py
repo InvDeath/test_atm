@@ -47,7 +47,9 @@ def pin_code(request):
 
     if not card.active or not pattern.match(raw_pin) or not card.pin == raw_pin:
         Operation.objects.create(operation_type=Operation.WRONG_PIN, card=card)
-        if Operation.objects.filter(operation_type=Operation.WRONG_PIN, card=card).count() >= 4:
+        attempts = Operation.objects.filter(
+            operation_type=Operation.WRONG_PIN, card=card).count()
+        if attempts >= 4:
             card.active = False
             card.save()
             return error_message(request, 'Your card has been blocked')
@@ -65,7 +67,16 @@ def operations(request):
 
 
 def balance(request):
-    return render(request, 'atm/balance.html')
+    card_number = request.session.get('card_number')
+    if not request.session.get('card_holder') or not card_number:
+        return error_message(request, 'You don’t have access to this page')
+
+    card = Card.objects.get(number=card_number)
+    context = {
+        'card_number': card_number,
+        'balance': card.balance,
+    }
+    return render(request, 'atm/balance.html', context)
 
 
 def withdrawal(request):

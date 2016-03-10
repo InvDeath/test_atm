@@ -4,13 +4,13 @@
   <div class="uk-grid">
     <div class="uk-width-1-1">
       <p>
-        Today: 12 dec 1996
+        Today: {% now "jS F Y" %}
       </p>
       <p>
-        Card number: 1111-1111-1111-1111
+        Card number: {{ card_number }}
       </p>
       <p>
-        Account ballance: $34235
+        Account ballance: ${{ balance }}
       </p>
     </div>
     <hr class="uk-width-1-1 uk-margin">

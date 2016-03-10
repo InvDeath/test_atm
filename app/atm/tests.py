@@ -1,3 +1,4 @@
+import datetime
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 from .models import Card, Operation
@@ -138,12 +139,30 @@ class OperationsTestCase(TestCase):
 
 
 class BalanceTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
+    def setUp(self):
+        self.client = Client()
 
     def test_access(self):
-        assert False
+        response = self.client.get(reverse('balance'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'access')
 
     def test_balance_appears(self):
-        assert False
+        session = self.client.session
+        session['card_number'] = '1111-1111-1111-1111'
+        session['card_holder'] = True
+        session.save()
+
+        response = self.client.get(reverse('balance'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/balance.html')
+        self.assertContains(response, '300.00')
+        self.assertContains(response, '1111-1111-1111-1111')
+        self.assertContains(response,
+                            datetime.datetime.now().strftime('%dth %B %Y'))
 
 
 class WithdrawalTestCase(TestCase):

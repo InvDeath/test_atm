@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
-
+from .models import Card
 
 class CardNumberTestCase(TestCase):
     fixtures = ['initial_data.json']
@@ -62,14 +62,29 @@ class PinTestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
+    def input_correct_card_number(self):
+        self.client.post(
+            reverse('card_number'),
+            {'number': '1111-1111-1111-1111'}
+        )
+
     def test_witout_card_number(self):
         response = self.client.get(reverse('pin_code'), follow=True)
+
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'atm/error.html')
         self.assertContains(response, 'access')
 
+
+
     def test_wrong_pin_message(self):
-        assert False
+        self.input_correct_card_number()
+        response = self.client.post(reverse('pin_code'), follow=True)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'wrong pin')
+
 
     def test_block_card(self):
         assert False

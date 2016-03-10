@@ -1,0 +1,31 @@
+{% for i in "x"|rjust:"9" %}
+<div class="uk-width-1-3 uk-grid-margin">
+  <button class="button-number uk-button uk-button-large" type="button" name="button">{{forloop.counter}}</button>
+</div>
+{%endfor%}
+
+<div class="uk-width-1-3 uk-grid-margin">
+  <button class="button-erase uk-button uk-button-large" type="button" name="button">Erase</button>
+</div>
+<div class="uk-width-1-3 uk-grid-margin">
+  <button class="button-number uk-button uk-button-large" type="button" name="button">0</button>
+</div>
+{% if with_exit %}
+<div class="uk-width-1-3 uk-grid-margin">
+  <a href="{% url 'logout' %}" class="uk-button uk-button-large">Exit</a>
+</div>
+{% endif %}
+<div class="uk-width-1-3{% if with_exit %} uk-push-1-3{% endif %} uk-grid-margin">
+  <input type="submit" value="OK" class="uk-button uk-button-primary uk-button-large">
+</div>
+<script type="text/javascript">
+  var inputField = $('#{{ input_css_id }}');
+  $('.button-number').on('click', function() {
+    if (inputField.val().length >= inputField.attr('maxlength')) return;
+    inputField.val(inputField.val() + $(this).html()).change();
+  });
+
+  $('.button-erase').on('click', function() {
+    inputField.val('');
+  });
+</script>

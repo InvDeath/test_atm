@@ -3,17 +3,25 @@ from django.core.urlresolvers import reverse
 
 
 class CardNumberTestCase(TestCase):
+    fixtures = ['initial_data.json']
 
     def setUp(self):
         self.client = Client()
 
     def test_user_can_input_number(self):
-        response = self.client.get(reverse('homepage'))
+        response = self.client.get(reverse('card_number'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'atm/card_number.html')
 
-    def test_process_valid_data(self):
-        assert False
+    def test_wrong_number(self):
+        response = self.client.post(
+            reverse('card_number'),
+            {'number': 'sdsadasd-4234-234-24erdfd'},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, '16 digits')
 
     def test_blocked_card_message(self):
         assert False

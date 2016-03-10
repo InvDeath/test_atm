@@ -1,0 +1,32 @@
+[
+{
+    "model": "atm.card",
+    "pk": 1,
+    "fields": {
+        "number": "1234-1234-1234-1234",
+        "pin": "1234",
+        "active": true,
+        "balance": "1000.00"
+    }
+},
+{
+    "model": "atm.card",
+    "pk": 2,
+    "fields": {
+        "number": "1111-1111-1111-1111",
+        "pin": "0000",
+        "active": true,
+        "balance": "300.00"
+    }
+},
+{
+    "model": "atm.operation",
+    "pk": 1,
+    "fields": {
+        "operation_type": 0,
+        "time": "2016-03-10T17:55:26.449Z",
+        "card": 1,
+        "withdrawal_amount": 0
+    }
+}
+]

@@ -41,11 +41,11 @@ def pin_code(request):
     if request.method != 'POST':
         return render(request, 'atm/pin_code.html')
 
-    card = Card.objects.get(number=card_number, active=True)
+    card = Card.objects.get(number=card_number)
     raw_pin = request.POST.get('pin_code', '')
     pattern = re.compile('^(\d{4})$')
 
-    if not pattern.match(raw_pin) or not card.pin == raw_pin:
+    if not card.active or not pattern.match(raw_pin) or not card.pin == raw_pin:
         Operation.objects.create(operation_type=Operation.WRONG_PIN, card=card)
         if Operation.objects.filter(operation_type=Operation.WRONG_PIN, card=card).count() >= 4:
             card.active = False
@@ -58,6 +58,9 @@ def pin_code(request):
 
 
 def operations(request):
+    if not request.session.get('card_holder'):
+        return error_message(request, 'You don’t have access to this page')
+
     return render(request, 'atm/operations.html')
 
 

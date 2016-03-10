@@ -119,11 +119,22 @@ class PinTestCase(TestCase):
 
 class OperationsTestCase(TestCase):
 
+    def setUp(self):
+        self.client = Client()
+
     def test_access(self):
-        assert False
+        response = self.client.get(reverse('operations'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'access')
 
     def test_render(self):
-        assert False
+        session = self.client.session
+        session['card_holder'] = True
+        session.save()
+        response = self.client.get(reverse('operations'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/operations.html')
 
 
 class BalanceTestCase(TestCase):

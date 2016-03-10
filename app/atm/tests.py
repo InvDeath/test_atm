@@ -23,6 +23,16 @@ class CardNumberTestCase(TestCase):
         self.assertTemplateUsed(response, 'atm/error.html')
         self.assertContains(response, '16 digits')
 
+    def test_card_absent(self):
+        response = self.client.post(
+            reverse('card_number'),
+            {'number': '2222-2222-2222-2222'},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'not found')
+
     def test_blocked_card_message(self):
         assert False
 

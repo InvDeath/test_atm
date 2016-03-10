@@ -1,5 +1,6 @@
-from django.shortcuts import render, redirect
 import re
+from django.shortcuts import render, redirect
+from .models import Card
 
 
 def error(request, message):
@@ -11,11 +12,16 @@ def card_number(request):
         return render(request, 'atm/card_number.html')
 
     raw_number = request.POST.get('number', '')
-    pattern = re.compile("^(\d{4}-\d{4}-\d{4}-\d{4})$")
+    pattern = re.compile('^(\d{4}-\d{4}-\d{4}-\d{4})$')
 
     if not pattern.match(raw_number):
         return error(request,
                      message='The card number must consist of 16 digits')
+
+    card = (Card.objects.filter(number=raw_number) or [None])[0]
+
+    if not card:
+        return error(request, message='Card with this number not found')
 
     return redirect('atm.views.pin_code', card_number=raw_number)
 

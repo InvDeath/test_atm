@@ -8,3 +8,7 @@ run:
 shell:
 	$(MAKE) build
 	docker run -ti --rm -v $(shell pwd):/usr/src test_atm:dockerfile bash
+
+test:
+	$(MAKE) build
+	docker run -ti --rm -v $(shell pwd):/usr/src test_atm:dockerfile python manage.py test

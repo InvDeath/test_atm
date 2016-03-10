@@ -27,13 +27,19 @@ def card_number(request):
     if not card.active:
         return error_message(request, 'This card is blocked')
 
-    return redirect('atm.pin_code')
+    request.session['card_number'] = raw_number
+    request.session['card_holder'] = False
+    return redirect('atm.views.pin_code')
 
 
 def pin_code(request):
-    if request.method == 'POST':
-        return redirect('atm.views.operations')
-    return render(request, 'atm/pin_code.html')
+    if not request.session.get('card_number'):
+        return error_message(request, 'You don’t have access to this page')
+
+    if request.method != 'POST':
+        return render(request, 'atm/pin_code.html')
+
+    return redirect('atm.views.operations')
 
 
 def operations(request):

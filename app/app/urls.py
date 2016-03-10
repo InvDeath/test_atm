@@ -19,7 +19,7 @@ from atm import views
 
 urlpatterns = [
     url(r'^$', views.card_number, name='card_number'),
-    url(r'^pin/$', views.pin_code, name='pin'),
+    url(r'^pin/$', views.pin_code, name='pin_code'),
     url(r'^operations/$', views.operations, name='operations'),
     url(r'^balance/$', views.balance, name='balance'),
     url(r'^withdrawal/$', views.withdrawal, name='withdrawal'),

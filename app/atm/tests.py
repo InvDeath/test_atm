@@ -44,13 +44,29 @@ class CardNumberTestCase(TestCase):
         self.assertContains(response, 'blocked')
 
     def test_valid_card_and_number(self):
-        assert False
+        response = self.client.post(
+            reverse('card_number'),
+            {'number': '1111-1111-1111-1111'},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/pin_code.html')
+        self.assertEqual(
+            self.client.session['card_number'], '1111-1111-1111-1111')
+        self.assertFalse(self.client.session['card_holder'])
 
 
 class PinTestCase(TestCase):
+    fixtures = ['initial_data.json']
 
-    def test_only_after_card_number(self):
-        assert False
+    def setUp(self):
+        self.client = Client()
+
+    def test_witout_card_number(self):
+        response = self.client.get(reverse('pin_code'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'access')
 
     def test_wrong_pin_message(self):
         assert False

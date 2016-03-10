@@ -1,10 +1,23 @@
 from django.shortcuts import render, redirect
+import re
+
+
+def error(request, message):
+    return render(request, 'atm/error.html', {'message': message})
 
 
 def card_number(request):
-    if request.method == 'POST':
-        return redirect('atm.views.pin_code')
-    return render(request, 'atm/card_number.html')
+    if request.method != 'POST':
+        return render(request, 'atm/card_number.html')
+
+    raw_number = request.POST.get('number', '')
+    pattern = re.compile("^(\d{4}-\d{4}-\d{4}-\d{4})$")
+
+    if not pattern.match(raw_number):
+        return error(request,
+                     message='The card number must consist of 16 digits')
+
+    return redirect('atm.views.pin_code', card_number=raw_number)
 
 
 def pin_code(request):
@@ -31,10 +44,6 @@ def withdrawal(request):
 
 def report(request):
     return render(request, 'atm/report.html')
-
-
-def error(request):
-    return render(request, 'atm/error.html', {'message': 'Something wrong'})
 
 
 def logout(request):

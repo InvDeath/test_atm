@@ -168,7 +168,10 @@ class BalanceTestCase(TestCase):
 class WithdrawalTestCase(TestCase):
 
     def test_access(self):
-        assert False
+        response = self.client.get(reverse('withdrawal'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'access')
 
     def test_wrong_amount(self):
         assert False

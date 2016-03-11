@@ -4,7 +4,7 @@
   <form class="uk-panel uk-form" method="post">
     {% csrf_token %}
     <div class="uk-form-row">
-      <input id="amount-input" class="uk-width-1-1 uk-form-large" maxlength="12" type="text" name="amount" placeholder="Enter anount" disabled="">
+      <input id="amount-input" class="uk-width-1-1 uk-form-large" maxlength="12" type="text" name="amount" placeholder="Enter anount" readonly="readonly">
     </div>
     <div class="uk-grid uk-width-large-1-3 uk-push-1-3">
       {% keyboard 'amount-input' with_exit=True %}

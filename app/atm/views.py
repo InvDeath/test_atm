@@ -80,15 +80,55 @@ def balance(request):
 
 
 def withdrawal(request):
-    if request.method == 'POST':
-        if request.POST.get('amount'):
-            return redirect('atm.views.report')
-        return redirect('atm.views.error')
-    return render(request, 'atm/withdrawal.html')
+    card_number = request.session.get('card_number')
+    if not request.session.get('card_holder') or not card_number:
+        return error_message(request, 'You don’t have access to this page')
+
+    if request.method != 'POST':
+        return render(request, 'atm/withdrawal.html')
+
+    amount = int(request.POST.get('amount', 0))
+
+    if amount <= 0:
+        return error_message(request, 'Please input correct amount')
+
+    card = Card.objects.get(number=card_number)
+
+    if card.balance < amount:
+        return error_message(request, 'Amount exceeds balance')
+
+    card.balance -= amount
+    card.save()
+
+    Operation.objects.create(
+        card=card,
+        operation_type=Operation.WITHDRAWAL,
+        withdrawal_amount=amount,
+    )
+
+    return redirect('atm.views.report')
 
 
 def report(request):
-    return render(request, 'atm/report.html')
+    card_number = request.session.get('card_number')
+    if not request.session.get('card_holder') or not card_number:
+        return error_message(request, 'You don’t have access to this page')
+
+    operation = Operation.objects.filter(
+        card__number=card_number,
+        operation_type=Operation.WITHDRAWAL
+    ).select_related('card').latest('time')
+
+    card = operation.card
+
+    context = {
+        'card_number': card.number,
+        'operation_date': operation.time,
+        'withdrawal': operation.withdrawal_amount,
+        'balance': card.balance,
+    }
+
+    return render(request, 'atm/report.html', context)
 
 
 def error(request):
@@ -96,4 +136,6 @@ def error(request):
 
 
 def logout(request):
+    del request.session['card_holder']
+    del request.session['card_number']
     return redirect('atm.views.card_number')

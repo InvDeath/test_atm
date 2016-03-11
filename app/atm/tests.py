@@ -166,6 +166,10 @@ class BalanceTestCase(TestCase):
 
 
 class WithdrawalTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
+    def setUp(self):
+        self.client = Client()
 
     def test_access(self):
         response = self.client.get(reverse('withdrawal'), follow=True)
@@ -174,25 +178,78 @@ class WithdrawalTestCase(TestCase):
         self.assertContains(response, 'access')
 
     def test_wrong_amount(self):
-        assert False
+        session = self.client.session
+        session['card_number'] = '1111-1111-1111-1111'
+        session['card_holder'] = True
+        session.save()
+
+        response = self.client.post(
+            reverse('withdrawal'), {'amount': '0'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'correct amount')
+
+        response = self.client.post(
+            reverse('withdrawal'), {'amount': '400'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'balance')
 
     def test_success_report(self):
-        assert False
+        session = self.client.session
+        session['card_number'] = '1111-1111-1111-1111'
+        session['card_holder'] = True
+        session.save()
+
+        response = self.client.post(
+            reverse('withdrawal'), {'amount': '100'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/report.html')
+        card = Card.objects.get(number='1111-1111-1111-1111')
+        self.assertEqual(card.balance, 200)
+        operation = Operation.objects.get(card=card)
+        self.assertEqual(operation.operation_type, Operation.WITHDRAWAL)
+        self.assertEqual(operation.withdrawal_amount, 100)
 
 
 class ReportTestCase(TestCase):
+    fixtures = ['initial_data.json']
+
+    def setUp(self):
+        self.client = Client()
 
     def test_access(self):
-        assert False
+        response = self.client.get(reverse('report'), follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/error.html')
+        self.assertContains(response, 'access')
 
-    def test_report_by_id(self):
-        assert False
+    def test_report(self):
+        session = self.client.session
+        session['card_number'] = '1111-1111-1111-1111'
+        session['card_holder'] = True
+        session.save()
+
+        response = self.client.post(
+            reverse('withdrawal'), {'amount': '100'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'atm/report.html')
+        self.assertContains(response, '1111-1111-1111-1111')
 
 
 class ExitTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
 
     def test_exit_view(self):
-        assert False
+        session = self.client.session
+        session['card_number'] = '1111-1111-1111-1111'
+        session['card_holder'] = True
+        session.save()
 
-    def test_session_expire(self):
-        assert False
+        response = self.client.get(reverse('logout'), follow=True)
+
+        session = self.client.session
+
+        self.assertFalse(session.get('card_holder', False))
+        self.assertFalse(session.get('card_number', False))

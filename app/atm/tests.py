@@ -1,5 +1,6 @@
 import datetime
 from django.test import TestCase, Client
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from .models import Card, Operation
 
@@ -88,7 +89,7 @@ class PinTestCase(TestCase):
 
     def test_block_card(self):
         self.input_correct_card_number()
-        for i in range(1, 4):  # constant in settings
+        for i in range(1, settings.ATM_PIN_ATTEMPTS):
             response = self.client.post(
                 reverse('pin_code'), {'pin_code': '1234'}, follow=True)
             self.assertEqual(response.status_code, 200)
@@ -164,6 +165,16 @@ class BalanceTestCase(TestCase):
         self.assertContains(response,
                             datetime.datetime.now().strftime('%dth %B %Y'))
 
+    def test_balance_operation(self):
+        session = self.client.session
+        session['card_number'] = '1111-1111-1111-1111'
+        session['card_holder'] = True
+        session.save()
+
+        self.client.get(reverse('balance'))
+        operation = Operation.objects.get(card__number='1111-1111-1111-1111')
+        self.assertEqual(operation.operation_type, Operation.CHECK_BALANCE)
+
 
 class WithdrawalTestCase(TestCase):
     fixtures = ['initial_data.json']
@@ -238,6 +249,7 @@ class ReportTestCase(TestCase):
 
 
 class ExitTestCase(TestCase):
+
     def setUp(self):
         self.client = Client()
 

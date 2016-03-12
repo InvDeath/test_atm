@@ -1,6 +1,7 @@
 import re
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.conf import settings
 from .models import Card, Operation
 
 
@@ -49,7 +50,7 @@ def pin_code(request):
         Operation.objects.create(operation_type=Operation.WRONG_PIN, card=card)
         attempts = Operation.objects.filter(
             operation_type=Operation.WRONG_PIN, card=card).count()
-        if attempts >= 4:
+        if attempts >= settings.ATM_PIN_ATTEMPTS:
             card.active = False
             card.save()
             return error_message(request, 'Your card has been blocked')
@@ -76,6 +77,9 @@ def balance(request):
         'card_number': card_number,
         'balance': card.balance,
     }
+
+    Operation.objects.create(operation_type=Operation.CHECK_BALANCE, card=card)
+
     return render(request, 'atm/balance.html', context)
 
 

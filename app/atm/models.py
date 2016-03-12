@@ -3,7 +3,7 @@ from decimal import Decimal
 
 
 class Card(models.Model):
-    number = models.CharField(max_length=19)
+    number = models.CharField(max_length=19, unique=True)
     pin = models.CharField(max_length=4)
     active = models.BooleanField()
     balance = models.DecimalField(

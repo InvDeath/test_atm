@@ -31,5 +31,5 @@ Open http://localhost:8000 or http://ip_your_docker_vm:8000 in your web browser.
 - Check cookies if client use (we use cookies)
 - Use Django components for security or create decorator for view
 - Write additional test cases
-- Add session timeouut
+- ~~Add session timeout~~
 

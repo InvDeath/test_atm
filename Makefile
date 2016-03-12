@@ -1,3 +1,8 @@
+init:
+	$(MAKE) build
+	docker run -ti --rm -v $(shell pwd):/usr/src test_atm:dockerfile python manage.py migrate
+	docker run -ti --rm -v $(shell pwd):/usr/src test_atm:dockerfile python manage.py loaddata initial_data
+
 build:
 	docker build -t test_atm:dockerfile .
 

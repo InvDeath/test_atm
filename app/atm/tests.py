@@ -1,5 +1,6 @@
 import datetime
 from django.test import TestCase, Client
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from .models import Card, Operation
 
@@ -88,7 +89,7 @@ class PinTestCase(TestCase):
 
     def test_block_card(self):
         self.input_correct_card_number()
-        for i in range(1, 4):  # constant in settings
+        for i in range(1, settings.ATM_PIN_ATTEMPTS):
             response = self.client.post(
                 reverse('pin_code'), {'pin_code': '1234'}, follow=True)
             self.assertEqual(response.status_code, 200)

@@ -123,4 +123,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+SESSION_COOKIE_AGE = 5 * 60  # 5 minutes
 ATM_PIN_ATTEMPTS = 4

@@ -164,6 +164,16 @@ class BalanceTestCase(TestCase):
         self.assertContains(response,
                             datetime.datetime.now().strftime('%dth %B %Y'))
 
+    def test_balance_operation(self):
+        session = self.client.session
+        session['card_number'] = '1111-1111-1111-1111'
+        session['card_holder'] = True
+        session.save()
+
+        self.client.get(reverse('balance'))
+        operation = Operation.objects.get(card__number='1111-1111-1111-1111')
+        self.assertEqual(operation.operation_type, Operation.CHECK_BALANCE)
+
 
 class WithdrawalTestCase(TestCase):
     fixtures = ['initial_data.json']
@@ -238,6 +248,7 @@ class ReportTestCase(TestCase):
 
 
 class ExitTestCase(TestCase):
+
     def setUp(self):
         self.client = Client()
 

@@ -76,6 +76,9 @@ def balance(request):
         'card_number': card_number,
         'balance': card.balance,
     }
+
+    Operation.objects.create(operation_type=Operation.CHECK_BALANCE, card=card)
+
     return render(request, 'atm/balance.html', context)
 
 
